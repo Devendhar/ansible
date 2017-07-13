@@ -1,0 +1,8 @@
+---
+ - hosts: ansnode.example.com
+   user: root
+   tasks:
+    - name: copy repo file
+      copy:
+       src: files/test.repo
+       dest: /etc/yum.repos.d/test.repo
