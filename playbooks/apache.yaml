@@ -1,0 +1,2 @@
+---
+ - hosts: ansnode.example.com
