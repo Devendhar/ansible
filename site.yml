@@ -1,0 +1,4 @@
+---
+- hosts: ansnode.example.com
+  roles: 
+   - apache
