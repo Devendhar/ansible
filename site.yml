@@ -1,4 +1,5 @@
 ---
+## ansible-plabook <playbook> --syntax-check
 - hosts: ansnode.example.com
   roles: 
    - apache
