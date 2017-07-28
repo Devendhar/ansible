@@ -1,13 +1,13 @@
 ---
-# handlers file for tomcat
-- name: restart tomcat service
+# Starting tomcat service
+- name: start tomcat service
   service:
    name: tomcat
-   state: restarted
+   state: started
   when: ansible_os_family == "RedHat"
 
-- name: restart tomcat service 
+- name: start tomcat service
   service:
    name: tomcat7
-   state: restarted
+   state: started
   when: ansible_os_family == "Debian"

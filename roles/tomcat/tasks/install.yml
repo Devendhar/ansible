@@ -1,0 +1,13 @@
+---
+#Installing Tomcat package
+- name: install tomcat redhat flavors
+  yum: 
+   name: tomcat
+   state: latest
+  when: ansible_os_family == "RedHat"
+
+- name: install tomcat debian flavours
+  package:
+   name: tomcat7
+   state: present
+  when: ansible_os_family == "Debian"
