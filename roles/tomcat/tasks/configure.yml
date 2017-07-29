@@ -7,3 +7,10 @@
    dest: /etc/tomcat/tomcat-users.xml
   notify: 
    - restart tomcat service
+
+- name: download jenkins.war
+  get_url:
+    url: http://mirrors.jenkins.io/war-stable/latest/jenkins.war
+    dest: /usr/share/tomcat/webapps/jenkins.war
+  notify:
+   - restart tomcat service
