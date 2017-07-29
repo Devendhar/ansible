@@ -1,8 +1,9 @@
 ---
 # Configuring tomcat-users.xml
 - name: tomcat-users.xml configure
-  copy:
-   src: tomcat-users.xml
+  #copy:
+  template:
+   src: "files/tomcat-users.xml.j2"
    dest: /etc/tomcat/tomcat-users.xml
   notify: 
    - restart tomcat service
