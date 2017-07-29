@@ -1,9 +1,14 @@
 ---
 #Installing Tomcat package
 - name: install tomcat redhat flavors
-  yum: 
-   name: tomcat
+  package: 
+   #name: {{ item }} -- wrong way of declaring
+   name: "{{ item }}"
    state: latest
+  with_items:
+    - tomcat
+    - tomcat-webapps
+    - tomcat-admin-webapps
   when: ansible_os_family == "RedHat"
 
 - name: install tomcat debian flavours
