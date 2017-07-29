@@ -3,8 +3,8 @@
 - hosts: ansnode.example.com
   roles: 
    #- apache
-   - { role: ansiblebit.oracle-java,
-       oracle_java_set_as_default: yes,
-       oracle_java_version: 8,
-       oracle_java_rpm_validate_certs: no }
+   #- { role: ansiblebit.oracle-java,
+   #    oracle_java_set_as_default: yes,
+   #    oracle_java_version: 8,
+   #    oracle_java_rpm_validate_certs: no }
    - tomcat
