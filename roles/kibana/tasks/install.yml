@@ -1,12 +1,18 @@
 ---
-- name: "copy rpm" 
-  copy:
-   src: "files/elasticsearch-5.5.1.rpm"
-   dest: "/opt/elasticsearch-5.5.1.rpm"
-  when: ansible_os_family == "RedHat"
+#- name: "copy rpm" 
+#  copy:
+#   src: "files/elasticsearch-5.5.1.rpm"
+#   dest: "/opt/elasticsearch-5.5.1.rpm"
+#  when: ansible_os_family == "RedHat"
   
 - name: "Installation of elasticsearch"
   package:
    name: "/opt/elasticsearch-5.5.1.rpm"
+   state: present
+  when: ansible_os_family == "RedHat"
+
+- name: "Installation of logstash"
+  package:
+   name: https://artifacts.elastic.co/downloads/logstash/logstash-5.5.1.rpm
    state: present
   when: ansible_os_family == "RedHat"

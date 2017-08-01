@@ -1,0 +1,6 @@
+---
+- name: configuring JVM memory options for elasticsearch to 512MB
+  copy:
+   src: "files/jvm.options"
+   dest: "/etc/elasticsearch/jvm.options"
+

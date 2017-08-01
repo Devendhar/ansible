@@ -1,0 +1,6 @@
+---
+- name: Starting services
+  service:
+   name: elasticsearch
+   state: started
+
