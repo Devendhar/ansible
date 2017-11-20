@@ -1,0 +1,41 @@
+---
+#put into ansible vault with
+##ansible-vault encrypt amiKeys.yml
+
+##after encrypting run the other playbook with 
+##ansible-playbook autoscale.yml --ask-vault-pass
+- hosts: localhost
+  #connection: local
+  #gather_facts: false
+
+  vars_files:
+    - amiKeys.yml
+ 
+  vars_prompt:
+    - name: vpc_id
+      prompt: "Enter VPC ID in which to create Security Grp"
+      
+
+  tasks:
+    - name: Setting up Security Group using ansible
+      ec2_group:
+         name: Ansible_AWS_Security_Grp
+         description: Rules Allowing Traffic on port 22 and 80
+         region: us-west-2
+         vpc_id: '{{ vpc_id }}'
+         aws_access_key: '{{ ami_access }}'
+         aws_secret_key: '{{ ami_secret }}'
+         tags:  "SG port 22 and 80"
+         rules:
+           - proto: tcp
+             from_port: 80
+             to_port: 80
+             cidr_ip: 0.0.0.0/0
+           - proto: tcp
+             from_port: 22
+             to_port: 22
+             cidr_ip: 0.0.0.0/0
+
+         rules_egress:
+           - proto: all
+             cidr_ip: 0.0.0.0/0
