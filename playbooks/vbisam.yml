@@ -1,0 +1,47 @@
+---
+- hosts: test 
+  become: true
+ 
+  tasks:
+    - name: installing GMP and Ncurses for vbisam
+      yum: 
+        name: "{{ item }}"
+        state: latest
+      with_items:       
+        - gmp
+        - gmp-devel
+        - ncurses
+        - ncurses-libs
+        - ncurses-base
+        - ncurses-devel
+
+    - name: Download vbisam-2.0 
+      get_url:
+        url: https://github.com/opensourcecobol/opensource-cobol/archive/master.zip
+        dest: /etc/ansible/playbooks
+
+    - name: Expand the vbisam-2.0
+      unarchive: 
+        src: /etc/ansible/playbooks/opensource-cobol-master.zip
+        dest: /etc/ansible/playbooks 
+
+    - name: Install vbisam using configure file
+      shell: export CFLAGS=-O2 && ./configure --with-compatcisam --prefix=/opt/vbisam-2.0 && make && make install
+      args:
+        chdir: /etc/ansible/playbooks/vbisam
+
+    - name: Download GnuCOBOL v2.2
+      get_url: 
+        url: ftp://ftp.gnu.org/gnu/gnucobol/gnucobol-2.2.tar.gz
+        dest: /etc/ansible/playbooks
+
+    - name: Expand the GnuCOBOL v2.2 tarball
+      unarchive:
+        src: /etc/ansible/playbooks/gnucobol-2.2.tar.gz
+       dest: /etc/ansible/playbooks/
+
+    - name: Install GnuCobol 2.2 using configure file
+      shell: export CPPFLAGS=-I/opt/vbisam-2.0/include && export LDFLAGS=-L/opt/vbisam-2.0/lib && ./configure --with-vbisam --prefix=/opt/gnucobol-2.2 && make && make install
+      args:
+        chdir: /etc/ansible/playbooks/gnucobol-2.2
+
