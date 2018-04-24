@@ -26,10 +26,15 @@
         dest: /etc/ansible/playbooks 
 
     - name: Install vbisam using configure file
-      shell: export CFLAGS=-O2 && ./configure --with-compatcisam --prefix=/opt/vbisam-2.0 && make && make install
+      shell: export CFLAGS=-O2 && chmod 750 configure && ./configure --with-compatcisam --prefix=/opt/vbisam-2.0 && make && make install
       args:
-        chdir: /etc/ansible/playbooks/vbisam
+        chdir: /etc/ansible/playbooks/opensource-cobol-master/vbisam
 
+    - name: Installing GnuCOBOL v1.1
+      shell: export CPPFLAGS=-I/opt/vbisam-2.0/include && export LDFLAGS=-L/opt/vbisam-2.0/lib && ./configure --with-vbisam --prefix=/opt/gnucobol-1.1 && make && make install
+      args:
+        chdir: /etc/ansible/playbooks/opensource-cobol-master
+      
     - name: Download GnuCOBOL v2.2
       get_url: 
         url: ftp://ftp.gnu.org/gnu/gnucobol/gnucobol-2.2.tar.gz
@@ -38,7 +43,7 @@
     - name: Expand the GnuCOBOL v2.2 tarball
       unarchive:
         src: /etc/ansible/playbooks/gnucobol-2.2.tar.gz
-       dest: /etc/ansible/playbooks/
+        dest: /etc/ansible/playbooks/
 
     - name: Install GnuCobol 2.2 using configure file
       shell: export CPPFLAGS=-I/opt/vbisam-2.0/include && export LDFLAGS=-L/opt/vbisam-2.0/lib && ./configure --with-vbisam --prefix=/opt/gnucobol-2.2 && make && make install
