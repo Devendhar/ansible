@@ -1,0 +1,66 @@
+---
+# tasks file for ntp
+- name: Install ntp package
+  action: "{{ ansible_pkg_mgr }}"
+  args:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+   - ntp
+  notify:
+    - restart ntpd (rhel)
+    - restart ntpd (deb)
+  tags: install
+
+- name: configure ntp.conf
+  template:
+    src: "ntp.conf.j2"
+    dest: "/etc/ntp.conf"
+    mode: 0644
+  notify:
+    - restart ntpd (rhel)
+    - restart ntpd (deb)
+  tags: configure
+
+- name: Create ntp drift file folder 
+  file: 
+    state: directory
+    path: "{{ ntp_driftfile_directory }}"
+    mode: 0755
+    owner: ntp
+    group: ntp
+  tags: configure
+
+- name: Ensure tzdata package is installed
+  action: "{{ ansible_pkg_mgr }}"
+  args:
+    name: tzdata
+    state: latest
+
+- include: clock-AMI.yml
+  when: ansible_distribution == "Amazon" or ansible_os_family == "RedHat"
+
+- name: set zone to /etc/sysconfig/clock
+  replace: dest=/etc/sysconfig/clock  regexp='^ZONE=\"UTC\"'  replace='ZONE="{{zone}}"'
+  when: ansible_distribution == "Amazon" or ansible_os_family == "RedHat"
+
+- name: set localtime
+  file: src={{ zoneinfo_path }} dest=/etc/localtime  state=link  force=yes
+#  file: src = /usr/share/zoneinfo/Europe/London   dest = /etc/localtime  state = link  force = yes 
+  when: ansible_distribution == "Amazon" or ansible_os_family == "RedHat"
+
+
+- name: start ntpd (rhel)
+  service:
+    name: ntpd
+    enabled: yes
+    state: started
+  when: ansible_distribution == "Amazon" or ansible_os_family == "RedHat"
+
+
+- name: start ntp
+  service:
+    name: ntp
+    enabled: yes
+    state: started
+  when: ansible_distribution == "Debian" or ansible_distribution == "Ubuntu"

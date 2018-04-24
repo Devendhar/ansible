@@ -1,0 +1,17 @@
+---
+# defaults file for ntp
+ntp_timezone: Asia/Kolkata
+zone: Asia/Kolkata
+zoneinfo_path: /usr/share/zoneinfo/Asia/Kolkata
+ntp_area: ".centos"
+ntp_servers:
+  - "0{{ ntp_area }}.pool.ntp.org iburst"
+  - "1{{ ntp_area }}.pool.ntp.org iburst"
+  - "2{{ ntp_area }}.pool.ntp.org iburst"
+  - "3{{ ntp_area }}.pool.ntp.org iburst"
+
+ntp_restrict:
+  - "127.0.0.1"
+  - " -6 ::1"
+
+ntp_driftfile_directory: "/var/lib/ntp"

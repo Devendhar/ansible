@@ -1,0 +1,15 @@
+---
+# handlers file for ntp
+- name: restart ntpd (rhel)
+  service:
+    name: ntpd
+    enabled: yes
+    state: restarted
+  when: ansible_os_family == "Amazon" or ansible_os_family == "RedHat"
+
+- name: restart ntpd (deb)
+  service:
+    name: ntp
+    enabled: yes
+    state: restarted
+  when: ansible_os_family == "Debian" or ansible_os_family == "Ubuntu"
