@@ -1,0 +1,7 @@
+---
+- hosts: pcs
+  become: true
+  roles:
+    - pcs
+#    - drbd
+#https://github.com/devgateway/ansible-role-pacemaker

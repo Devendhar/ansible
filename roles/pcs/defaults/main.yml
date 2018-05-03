@@ -1,0 +1,27 @@
+---
+# defaults file for pcs
+pacemaker_user: hacluster
+pacemaker_password: redhat
+pacemaker_cluster_name: mycluster
+pacemaker_properties:
+  stonith_enabled: "false"
+pacemaker_resources:
+  - id: ClusterIP
+    type: "ocf:heartbeat:IPaddr2"
+    options:
+      ip: 192.168.56.110
+      cidr_netmask: 24
+    op:
+      - action: monitor
+        options:
+          interval: 30s
+
+#  - id: WebSite
+#    type: "ocf:heartbeat:apache"
+#    options:
+#      configfile: "/etc/httpd/conf/httpd.conf"
+#      statusurl: "http://localhost/server-status"
+#    op:
+#      - action: monitor
+#        options: 
+#          interval: 60s

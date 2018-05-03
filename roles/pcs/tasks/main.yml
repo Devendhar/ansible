@@ -1,0 +1,71 @@
+---
+# tasks file for pcs
+#
+- name: Setting selinux context to disabled
+  lineinfile:
+    path: /etc/selinux/config
+    regexp: '^SELINUX='
+    line: 'SELINUX=disabled'
+
+- name: Installing Pacemaker packages
+  action: "{{ ansible_pkg_mgr }}"
+  args:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - pacemaker
+    - pcs
+    - psmisc
+    - policycoreutils-python
+
+
+- name: Enabling pcsd service
+  service:
+    name: pcsd
+    state: started
+    enabled: yes
+
+
+- name: Set password for the user {{ pacemaker_user }}
+  user:
+    name: "{{ pacemaker_user }}"
+    system: true
+    password: "{{ pacemaker_password | password_hash('sha512', ansible_hostname) }}"
+
+
+- name: Authenticate all nodes
+  command: >
+    pcs cluster auth "{{ pacemaker_hosts | default(ansible_play_batch) | join(' ') }}" -u {{ pacemaker_user }} -p {{ pacemaker_password }}
+  run_once: true
+  args:
+    creates: /var/lib/pcsd/tokens
+
+- name: Setup message bus
+  run_once: true
+  command: >
+    pcs cluster setup --wait 120 --name "{{ pacemaker_cluster_name }}" "{{ pacemaker_hosts | default(ansible_play_batch) | join(' ') }}"
+  args:
+    creates: /etc/corosync/corosync.conf
+
+
+- name: Start all nodes
+  service:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  with_items:
+    - corosync
+    - pacemaker
+
+- name: Configure cluster properties
+  run_once: true
+  include_tasks: property.yml
+  with_dict: "{{ pacemaker_properties }}"
+  when: pacemaker_properties is defined
+
+- name: Configure cluster resources
+  run_once: true
+  include_tasks: resource.yml
+  with_items: "{{ pacemaker_resources }}"
+  when: pacemaker_resources is defined
+
