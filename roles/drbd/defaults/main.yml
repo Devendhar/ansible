@@ -1,0 +1,7 @@
+---
+# defaults file for drbd
+raw_disks: 
+disks: /dev/sdb1
+elrepo_url: "http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm"
+
+vg_name: data

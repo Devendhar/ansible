@@ -1,0 +1,5 @@
+---
+- hosts: pcs
+  become: true
+  roles:
+    - drbd

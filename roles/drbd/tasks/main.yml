@@ -1,0 +1,60 @@
+---
+# tasks file for drbd
+- name: Importing the ELRepo package signing key
+  rpm_key:
+    state: present
+    key: https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+
+#- name: Download elrepo package
+#  get_url:
+#    url: "http://elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm"
+#    dest: /tmp
+
+#- name: Installing and enabling ELRepo repository
+#  yum: 
+#    name: /tmp/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
+#    state: installed
+#
+- name: Download and install elrepo package
+  shell: rpm -Uvh "{{ elrepo_url }}"
+  args:
+    creates: /etc/yum.repos.d/elrepo.repo
+ 
+- name: Installing the DRBD kernel module and utilities
+  action: "{{ ansible_pkg_mgr }}"
+  args:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - kmod-drbd84
+    - drbd84-utils
+
+- name: partition new disk
+  shell: echo -e "n\np\n1\n\n\nw" | sudo fdisk /dev/sdb
+  args:
+    executable: /bin/bash
+    creates: "{{ disks }}"
+
+- name: Create a volume group 
+  lvg:
+    vg: "{{ vg_name }}"
+    pvs: "{{ disks }}"
+  when: vg_name is defined
+
+- name: Create a logical volume of size 1G with disks "{{ disks }}"
+  lvol:
+    vg: "{{ vg_name }}"
+    lv: drbd-demo
+    size: 100%FREE
+  when: vg_name is defined
+
+
+- name: Copy drbd configuration to the nodes
+  copy: 
+    src: "files/wwwdata.res"
+    dest: "/etc/drbd.d/wwwdata.res"
+
+- name: Initialize DRBD
+  shell: modprobe drbd && drbdadm create-md wwwdata && drbdadm up wwwdata 
+  args:
+    creates: /dev/drbd1
