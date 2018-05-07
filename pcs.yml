@@ -1,6 +1,7 @@
 ---
 - hosts: pcs
   become: true
+  remote_user: root
   roles:
     - pcs
 #    - drbd

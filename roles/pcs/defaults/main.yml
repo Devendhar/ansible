@@ -3,6 +3,7 @@
 pacemaker_user: hacluster
 pacemaker_password: redhat
 pacemaker_cluster_name: mycluster
+nodes: "node11 node12"
 pacemaker_properties:
   stonith_enabled: "false"
 pacemaker_resources:
@@ -16,12 +17,12 @@ pacemaker_resources:
         options:
           interval: 30s
 
-#  - id: WebSite
-#    type: "ocf:heartbeat:apache"
-#    options:
-#      configfile: "/etc/httpd/conf/httpd.conf"
-#      statusurl: "http://localhost/server-status"
-#    op:
-#      - action: monitor
-#        options: 
-#          interval: 60s
+  - id: WebSite
+    type: "ocf:heartbeat:apache"
+    options:
+      configfile: "/etc/httpd/conf/httpd.conf"
+      statusurl: "http://localhost/server-status"
+    op:
+      - action: monitor
+        options: 
+          interval: 60s
