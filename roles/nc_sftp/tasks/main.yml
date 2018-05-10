@@ -1,0 +1,60 @@
+---
+# tasks file for nc_sftp
+#
+- name: SFTP-Server | Create sftp user
+  user:
+    name: "{{ item.name }}"
+    group: "{{sftp_group_name }}"
+    # `None` means default value -> default is to have a shell
+    shell: "{{ None if ( item.shell | default(True)) else sftp_nologin_shell }}"
+    comment: "{{ item.comment }}"
+    uid: "{{ item.uid }}"
+    state: present
+  with_items: "{{ sftp_users }}"
+
+- name: SFTP-Server | Update user passwords
+  user:
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+  with_items: "{{ sftp_users }}"
+  when: item.password is defined
+
+- name: SFTP-Server | Create chroot dir
+  file: 
+    path: "{{ sftp_chroot_dir }}"
+    owner: root
+    group: root
+    state: directory
+  
+
+- name: SFTP-Server | Create Directories
+  file: 
+    path: "{{ sftp_directories }}"
+    owner: "{{ item[0].name }}"
+    group: "{{ sftp_group_name }}"
+    mode: 0750
+    state: directory
+  with_nested:
+    - "{{ sftp_users }}"
+    - "{{ sftp_directories }}"
+
+- name: SFTP-Server | alter sftp subsystem entry
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^Subsystem(\s+)sftp'
+    line: "Subsystem sftp internal-sftp - f Auth -l VERBOSE"
+    state: present
+  notify: SFTP-Server | Restart sshd
+
+- name: SFTP-Server | Add sshd_config block
+  blockinfile:
+    dest: /etc/ssh/sshd_config
+    marker: '# {mark} SFTP-Server {{ item.name }} block'
+    block: |
+      Match User {{ item.name }}
+          ChrootDirectory {{ sftp_chroot_dir }}
+          X11Forwarding no
+          AllowTcpForwarding no
+          ForceCommand internal-sftp
+  with_items: "{{ sftp_users }}"
+  notify: SFTP-Server | Restart sshd

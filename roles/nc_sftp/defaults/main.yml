@@ -1,0 +1,14 @@
+---
+# defaults file for nc_sftp
+
+sftp_group_name: netcrk
+sftp_nologin_shell: /sbin/nologin
+sftp_directories: "/u02/netcrk/sftp/uat_sftp"
+sftp_chroot_dir: "/u02/netcrk/sftp"
+
+sftp_users:
+- name: uat_sftp
+  password: "$6$FhcTsNJV$RulPnGcpsJdl8NwVSjipUQ55I7YejN1OvXLPuCPCN0LO2VqKg0YUadOX4O7CX/Q1656mLocvhDzzo8swTkgUD1"
+  shell: False
+  comment: "UAT SFTP User"
+  uid: 1110 
