@@ -1,0 +1,6 @@
+---
+
+ntp_subnet: 192.168.56.0/24
+
+etcd_name: controller
+etcd_ip: 192.168.56.5

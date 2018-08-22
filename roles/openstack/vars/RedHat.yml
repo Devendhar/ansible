@@ -1,0 +1,5 @@
+---
+ntp_package: chrony
+ntp_subnet: 192.168.56.0/24
+ntp_daemon: chronyd
+

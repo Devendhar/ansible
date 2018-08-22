@@ -1,0 +1,25 @@
+---
+
+- name: "Include OS specific Variables"
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: "NTP package installation"
+  package:
+    name: "{{ ntp_package }}"
+    state: present
+
+- name: "Start NTP Service"
+  service:
+    name: "{{ ntp_daemon }}"
+    state: started
+    enabled: yes
+
+- name: "Copy chrony conf file"
+  template:
+    src: files/chrony.conf.j2
+    dest: /etc/chrony.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart ntp
+

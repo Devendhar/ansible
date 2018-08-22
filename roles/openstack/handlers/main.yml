@@ -1,0 +1,22 @@
+---
+# handlers file for openstack
+- name: restart ntp
+  service:
+    name: "{{ ntp_daemon }}"
+    state: restarted
+
+- name: restart mariadb
+  service:
+    name: mariadb
+    state: restarted
+
+- name: restart memcached
+  service:
+    name: memcached
+    state: restarted
+
+- name: restart etcd
+  service:
+    name: etcd
+    state: restarted
+

@@ -1,0 +1,21 @@
+---
+
+- name: "Installing RabbitMQ-server package"
+  package:
+    name: rabbitmq-server
+    state: present
+
+- name: "Enable and start rabbitmq service"
+  service: 
+    name: rabbitmq-server
+    state: started
+    enabled: yes
+
+- name: "Add user to server and assign full access"
+  rabbitmq_user:
+    user: openstack
+    password: openstack
+    configure_priv: .*
+    read_priv: .*
+    write_priv: .*
+    state: present      

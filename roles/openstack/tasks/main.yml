@@ -1,0 +1,8 @@
+---
+# tasks file for openstack
+- include_tasks: ntp.yml
+- include_tasks: os_client.yml
+- include_tasks: mysql.yml
+- include_tasks: rabbitmq.yml
+- include_tasks: memcached.yml
+- include_tasks: etcd.yml

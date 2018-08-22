@@ -1,0 +1,25 @@
+---
+
+- name: "Installing memcached package"
+  package: 
+    name: "{{ item }}" 
+    state: present
+  with_items:
+    - memcached
+    - python-memcached
+
+- name: "Enable and start the memcached service"
+  service: 
+    name: memcached
+    state: started
+    enabled: yes
+
+- name: "Copy updated memcached file"
+  template:
+    src: files/memcached.j2
+    dest: /etc/sysconfig/memcached
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart memcached
+ 

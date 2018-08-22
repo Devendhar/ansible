@@ -1,0 +1,86 @@
+---
+
+- name: "Installing maria DB packages"
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - mariadb
+    - mariadb-server
+    - python2-PyMySQL
+    - MySQL-python
+
+- name: "start Mariadb service"
+  service:
+    name: mariadb
+    state: started
+    enabled: true
+
+- name: "Copy custom mariadb con file"
+  template:
+    src: files/openstack_db.conf.j2
+    dest: /etc/my.cnf.d/openstack.cnf
+  notify: restart mariadb
+
+#https://stackoverflow.com/questions/25136498/ansible-answers-to-mysql-secure-installation
+- name: "Sets the root password"
+  mysql_user:
+    login_user: root
+    login_password: "redhat"
+    user: root
+    password: "redhat"
+    host_all: yes 
+
+- name: "Deletes anonymous MySQL server user for {{ ansible_fqdn }}"
+  mysql_user:
+    login_user: root
+    login_password: "redhat"
+    user: ""
+    host: "{{ ansible_fqdn }}"
+    state: absent
+
+- name: Deletes anonymous MySQL server user for localhost
+  mysql_user:
+    login_user: root
+    login_password: "redhat"
+    user: ""
+    state: absent
+
+- name: Secures the MySQL root user for IPV6 localhost (::1)
+  mysql_user: 
+    login_user: root
+    login_password: "redhat"
+    user: root 
+    password: "redhat" 
+    host: "::1"
+
+- name: Secures the MySQL root user for IPV4 localhost (127.0.0.1)
+  mysql_user: 
+    login_user: root
+    login_password: "redhat"
+    user: root 
+    password: "redhat" 
+    host: "127.0.0.1"
+
+- name: Secures the MySQL root user for localhost domain (localhost)
+  mysql_user: 
+    login_user: root
+    login_password: "redhat"
+    user: root 
+    password: "redhat" 
+    host: "localhost"
+
+- name: Secures the MySQL root user for server_hostname domain
+  mysql_user: 
+    login_user: root
+    login_password: "redhat"
+    user: root
+    password: "redhat" 
+    host: "{{ ansible_fqdn }}"
+
+- name: Removes the MySQL test database
+  mysql_db: 
+    login_user: root
+    login_password: "redhat"
+    db: test 
+    state: absent

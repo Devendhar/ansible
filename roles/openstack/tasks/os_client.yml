@@ -1,0 +1,10 @@
+---
+
+- name: "Installing openstack client packages"
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - centos-release-openstack-queens
+    - python-openstackclient
+    - openstack-selinux
